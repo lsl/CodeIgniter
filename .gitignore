@@ -12,5 +12,3 @@ application/config/autoload.php
 application/config/database.php
 
 application/controllers/welcome.php
-
-application/config/autoload.php

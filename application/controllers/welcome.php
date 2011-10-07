@@ -19,12 +19,7 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		//$this->load->library('db');
-		//$this->load->view('welcome_message');
-		$this->db->like('test_txt','Test');
-		$r = $this->db->get('test')->row();
-		print_r($r);
-		
+		$this->load->view('welcome_message');
 	}
 }
 
