@@ -7,8 +7,3 @@ application/cache/*
 application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
-application/config/autoload.php
-
-application/config/database.php
-
-application/controllers/welcome.php
