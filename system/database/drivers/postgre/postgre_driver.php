@@ -149,6 +149,100 @@ class CI_DB_postgre_driver extends CI_DB {
 	}
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Like
+	 *
+	 * Called by like() or orlike()
+	 *
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	string
+	 * @return	object
+	 */
+	protected function _like($field, $match = '', $type = 'AND ', $side = 'both', $not = '')
+	{
+		if ( ! is_array($field))
+		{
+			$field = array($field => $match);
+		}
+
+		foreach ($field as $k => $v)
+		{
+			$k = $this->_protect_identifiers($k);
+
+			$prefix = (count($this->ar_like) == 0) ? '' : $type;
+
+			$v = $this->escape_like_str($v);
+			
+			if ($side == 'none')
+			{
+				$like_statement = $prefix." $k $not iLIKE '{$v}'";
+			}
+			elseif ($side == 'before')
+			{
+				$like_statement = $prefix." $k $not iLIKE '%{$v}'";
+			}
+			elseif ($side == 'after')
+			{
+				$like_statement = $prefix." $k $not iLIKE '{$v}%'";
+			}
+			else
+			{
+				$like_statement = $prefix." $k $not iLIKE '%{$v}%'";
+			}
+
+			// some platforms require an escape sequence definition for LIKE wildcards
+			if ($this->_like_escape_str != '')
+			{
+				$like_statement = $like_statement.sprintf($this->_like_escape_str, $this->_like_escape_chr);
+			}
+
+			$this->ar_like[] = $like_statement;
+			if ($this->ar_caching === TRUE)
+			{
+				$this->ar_cache_like[] = $like_statement;
+				$this->ar_cache_exists[] = 'like';
+			}
+
+		}
+		return $this;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * GROUP BY
+	 *
+	 * @param	string
+	 * @return	object
+	 */
+	public function group_by($by)
+	{
+		if (is_string($by))
+		{
+			$by = explode(',', $by);
+		}
+
+		foreach ($by as $val)
+		{
+			$val = trim($val);
+
+			if ($val != '')
+			{
+				$this->ar_groupby[] = $this->_protect_identifiers($val);
+
+				if ($this->ar_caching === TRUE)
+				{
+					$this->ar_cache_groupby[] = $this->_protect_identifiers($val);
+					$this->ar_cache_exists[] = 'groupby';
+				}
+			}
+		}
+		return $this;
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Version number query string
